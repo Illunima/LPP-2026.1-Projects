@@ -39,6 +39,17 @@ class Deck:
         self.add(Card(3))
         self.add(Card(4))
 
+    @classmethod
+    def pick_cards(cls, amount):
+        deck = Deck()
+        cards = []
+        for i in range(1, 16):
+            deck.add(Card(i))
+        deck.deck_shuffle()
+        for i in range(amount):
+            cards.append(deck.draw())
+        return cards
+
 
 class SideDeck(Deck):
     def __init__(self):

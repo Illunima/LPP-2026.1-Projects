@@ -53,25 +53,26 @@ class Card():
     
     def sacrifice(self, own_side):
         self.hp = 0
-        self.checkup(own_side)
+        return self.checkup(own_side)
     
     def strike(self, own_side, oposing_side, target):
         scale_tip = 0
         if target == None:
             damage = self.atk
-            if oposing_side[self.pos] != None:
-                for sigil in oposing_side[self.pos].sigils:
+            if oposing_side[self.pos - 1] != None:
+                for sigil in oposing_side[self.pos - 1].sigils:
                     if sigil == Stinky():
                         damage -= 1
-            if self.pos - 1 >= 0 and own_side[self.pos - 1] != None:
-                for sigil in own_side[self.pos - 1].sigils:
+            if self.pos - 2 >= 0 and own_side[self.pos - 2] != None:
+                for sigil in own_side[self.pos - 2].sigils:
                     if sigil == Leader():
                         damage += 1
-            if self.pos + 1 < 4 and own_side[self.pos + 1] != None:
-                for sigil in own_side[self.pos + 1].sigils:
+            if self.pos < 4 and own_side[self.pos] != None:
+                for sigil in own_side[self.pos].sigils:
                     if sigil == Leader():
                         damage += 1
-            print(f"{self.name} ataca o oponente, adicionando {damage} à balança.")
+            if damage > 0:
+                print(f"{self.name} ataca o oponente, adicionando {damage} à balança.")
             scale_tip += damage
         else:
             bypass = False
@@ -85,16 +86,16 @@ class Card():
                     repulsive = True
                 if  sigil == MightyLeap():
                     bypass = False
-            if oposing_side[self.pos] != None:
-                for sigil in oposing_side[self.pos].sigils:
+            if oposing_side[self.pos - 1] != None:
+                for sigil in oposing_side[self.pos - 1].sigils:
                     if sigil == Stinky():
                         damage -= 1
-            if self.pos - 1 >= 0 and own_side[self.pos - 1] != None:
-                for sigil in own_side[self.pos - 1].sigils:
+            if self.pos - 2 >= 0 and own_side[self.pos - 2] != None:
+                for sigil in own_side[self.pos - 2].sigils:
                     if sigil == Leader():
                         damage += 1
-            if self.pos + 1 < 4 and own_side[self.pos + 1] != None:
-                for sigil in own_side[self.pos + 1].sigils:
+            if self.pos < 4 and own_side[self.pos] != None:
+                for sigil in own_side[self.pos].sigils:
                     if sigil == Leader():
                         damage += 1
             if bypass:
@@ -106,6 +107,7 @@ class Card():
             else:
                 if damage > 0:
                     print(f"{self.name} ataca {target.name}, causando {damage} de dano.")
+                    target.hp -= damage
         return scale_tip
     
     def checkup(self, own_side):
@@ -114,8 +116,11 @@ class Card():
             for sigil in self.sigils:
                 if sigil == BoneKing():
                     bones = 4
-            print(f"{self.name} pereceu. Você foi concedido {bones} Ossos.")
-            own_side[self.pos] = None
+            if bones > 1:
+                print(f"{self.name} pereceu. Você foi concedido {bones} Ossos.")
+            else:
+                print(f"{self.name} pereceu. Você foi concedido {bones} Osso.")
+            own_side[self.pos-1] = None
             self.pos = CardPos.DISCARD.value
             return bones
         return 0
