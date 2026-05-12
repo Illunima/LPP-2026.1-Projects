@@ -37,8 +37,8 @@ class Card():
         print(f"=")
         print(f"|{self.name}")
         print(f"| custo: {self.cost} {self.cost_type}")
-        print(f"| ataque: {self.base_atk}")
-        print(f"| saúde: {self.base_hp}")
+        print(f"| ataque: {self.atk}")
+        print(f"| saúde: {self.hp}")
         print(f"| selos: ")
         for sigil in self.sigils:
             print(f"| - {sigil.name}")
@@ -57,54 +57,55 @@ class Card():
     
     def strike(self, own_side, oposing_side, target):
         scale_tip = 0
-        for card in target:
-            if target == None:
-                damage = self.atk
+        if target == None:
+            damage = self.atk
+            if oposing_side[self.pos] != None:
                 for sigil in oposing_side[self.pos].sigils:
                     if sigil == Stinky():
                         damage -= 1
-                if self.pos - 1 >= 0:
-                    for sigil in own_side[self.pos - 1].sigils:
-                        if sigil == Leader():
-                            damage += 1
-                if self.pos + 1 < 4:
-                    for sigil in own_side[self.pos + 1].sigils:
-                        if sigil == Leader():
-                            damage += 1
-                print(f"{self.name} ataca o oponente, adicionando {damage} à balança.")
+            if self.pos - 1 >= 0 and own_side[self.pos - 1] != None:
+                for sigil in own_side[self.pos - 1].sigils:
+                    if sigil == Leader():
+                        damage += 1
+            if self.pos + 1 < 4 and own_side[self.pos + 1] != None:
+                for sigil in own_side[self.pos + 1].sigils:
+                    if sigil == Leader():
+                        damage += 1
+            print(f"{self.name} ataca o oponente, adicionando {damage} à balança.")
+            scale_tip += damage
+        else:
+            bypass = False
+            damage = self.atk
+            repulsive = False
+            for sigil in self.sigils:
+                if sigil == Airborne():
+                    bypass = True
+            for sigil in target.sigils:
+                if sigil == Repulsive():
+                    repulsive = True
+                if  sigil == MightyLeap():
+                    bypass = False
+            if oposing_side[self.pos] != None:
+                for sigil in oposing_side[self.pos].sigils:
+                    if sigil == Stinky():
+                        damage -= 1
+            if self.pos - 1 >= 0 and own_side[self.pos - 1] != None:
+                for sigil in own_side[self.pos - 1].sigils:
+                    if sigil == Leader():
+                        damage += 1
+            if self.pos + 1 < 4 and own_side[self.pos + 1] != None:
+                for sigil in own_side[self.pos + 1].sigils:
+                    if sigil == Leader():
+                        damage += 1
+            if bypass:
+                if damage > 0:
+                    print(f"{self.name} ataca por cima de {target.name}, adicionando {damage} à balança.")
+                    scale_tip += damage
+            elif repulsive:
+                print(f"{self.name} não consegue atacar {target.name}.")
             else:
-                scale_tip += damage
-                bypass = False
-                damage = self.atk
-                repulsive = False
-                for sigil in self.sigils:
-                    if sigil == Airborne():
-                        bypass = True
-                for sigil in target.sigils:
-                    if sigil == Repulsive():
-                        repulsive = True
-                    if  sigil == MightyLeap():
-                        bypass = False
-                for sigil in oposing_side[self.pos].sigils:
-                    if sigil == Stinky():
-                        damage -= 1
-                if self.pos - 1 >= 0:
-                    for sigil in own_side[self.pos - 1].sigils:
-                        if sigil == Leader():
-                            damage += 1
-                if self.pos + 1 < 4:
-                    for sigil in own_side[self.pos + 1].sigils:
-                        if sigil == Leader():
-                            damage += 1
-                if bypass:
-                    if damage > 0:
-                        print(f"{self.name} ataca por cima de {target.name}, adicionando {damage} à balança.")
-                        scale_tip += damage
-                elif repulsive:
-                    print(f"{self.name} não consegue atacar {target.name}.")
-                else:
-                    if damage > 0:
-                        print(f"{self.name} ataca {target.name}, causando {damage} de dano.")
+                if damage > 0:
+                    print(f"{self.name} ataca {target.name}, causando {damage} de dano.")
         return scale_tip
     
     def checkup(self, own_side):

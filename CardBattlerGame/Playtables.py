@@ -240,6 +240,7 @@ class BattleTable():
         for i in range (3):
             self.player.hand.append( self.player.deck.draw() )
         self.player.hand.append( self.player.sidedeck.draw() )
+        self.scribe_to_play()
         while self.ongoing == True:
             if self.player_turn == True:
                 self.player_to_play()
@@ -260,7 +261,7 @@ class BattleTable():
                     return ( "loss", 0 )
 
 class BatlleScript():
-    script_1 = [ ( None, None, None, None ), ( None, Card(2), None, None ), ( None, None, None, Card(5) ), ( None, Card(8), None, None) ]
+    script_1 = [ ( None, Card(2), None, None ), ( None, None, None, Card(5) ), ( None, None, None, None ), ( None, Card(8), None, None) ]
 
     all_scripts = [ script_1 ]
 

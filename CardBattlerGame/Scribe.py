@@ -5,4 +5,3 @@ class Scribe():
         self.style = 0
         self.player = Player()
         self.card_queue = []
-        self.queue.count = []

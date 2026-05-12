@@ -11,3 +11,4 @@ extra_card = input("Digite o id de uma carta para adicioná-la ao seu deck, digi
 if extra_card != "0":
     player_1.deck.add( Card(extra_card) )
 test_battle = BattleTable( player_1, scribe )
+test_battle.host_table()
