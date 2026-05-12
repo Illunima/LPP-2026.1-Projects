@@ -34,10 +34,10 @@ class Deck:
             self.stack.append(card)
     
     def starting_deck_1(self):
-        self.add(1)
-        self.add(2)
-        self.add(3)
-        self.add(4)
+        self.add(Card(1))
+        self.add(Card(2))
+        self.add(Card(3))
+        self.add(Card(4))
 
 
 class SideDeck(Deck):
