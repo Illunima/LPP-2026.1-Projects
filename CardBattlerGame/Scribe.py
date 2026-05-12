@@ -9,4 +9,4 @@ class Scribe():
 
     def test_map(self):
         self.map.add_event_node(1)
-        self.pam.add_event_node(0)
+        self.map.add_event_node(0)
