@@ -14,6 +14,7 @@ class Player():
             print("")
 
     def view_hand(self):
-        for card in self.hand:
-            card.display_card()
-            print("")
+        for i in range( len(self.hand) ):
+            print(f"Carta {i+1}")
+            self.hand[i].display_card()
+        print("")
