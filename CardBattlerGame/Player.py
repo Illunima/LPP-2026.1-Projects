@@ -12,3 +12,8 @@ class Player():
         for card in self.deck.cards:
             card.display_card()
             print("")
+
+    def view_hand(self):
+        for card in self.hand:
+            card.display_card()
+            print("")

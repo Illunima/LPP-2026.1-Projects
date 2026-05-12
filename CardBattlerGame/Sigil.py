@@ -21,3 +21,15 @@ class Airborne():
 class Sprinter():
     name = "Sprinter"
     desc = "At the end of the owner's turn, this card moves in the sigil's direction."
+
+class Repulsive():
+    name = "Repulsive"
+    desc = "If a creature would attack this card, it does not."
+
+class WorthySacrifice():
+    name = "Worthy Sacrifice"
+    desc = "This card counts as 3 Blood  rather than 1 Blood when sacrificed."
+
+class BoneKing():
+    name = "Bone King"
+    desc = "When this card dies, 4 Bones are awarded instead of 1."

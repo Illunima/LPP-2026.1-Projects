@@ -25,7 +25,7 @@ class Deck:
         self.stack.remove(old)
         self.stack.insert(new)
     
-    def shuffle(self):
+    def deck_shuffle(self):
         self.stack.clear()
         temp = self.cards.copy()
         while len(temp) != 0:
@@ -45,5 +45,5 @@ class SideDeck(Deck):
         self.cards = [ Card(0), Card(0), Card(0), Card(0), Card(0), Card(0), Card(0), Card(0), Card(0), Card(0) ]
         self.stack = self.cards.copy()
 
-    def shuffle(self):
+    def deck_shuffle(self):
         self.stack = self.cards.copy()

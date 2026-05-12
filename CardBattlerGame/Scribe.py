@@ -1,4 +1,4 @@
-import Player
+from Player import Player
 
 class Scribe():
     def __init__(self):
