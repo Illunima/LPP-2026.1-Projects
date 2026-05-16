@@ -29,17 +29,18 @@ class BattleTable():
                     print(f"A carta {self.scribe_side[i].name} avança para a posição {i+1} do campo do oponente.")         
 
     def scribe_to_play(self):
-        upnext = self.queue_script.pop(0)
-        for pos in range(4):
-            if upnext[pos] != None:
-                if self.scribe_queue[pos] == None:
-                    self.scribe_queue[pos] = upnext[pos]
-                    print(f"O patrono se prepara para avançar a carta {self.scribe_queue[pos].name} na posição {pos+1}")
-                else:
-                    aux = ( None, None, None, None)
-                    aux[pos] = upnext[pos]
-                    self.queue_script.append(aux)
-        del upnext
+        if len(self.queue_script) > 0:
+            upnext = self.queue_script.pop(0)
+            for pos in range(4):
+                if upnext[pos] != None:
+                    if self.scribe_queue[pos] == None:
+                        self.scribe_queue[pos] = upnext[pos]
+                        print(f"O patrono se prepara para avançar a carta {self.scribe_queue[pos].name} na posição {pos+1}")
+                    else:
+                        aux = ( None, None, None, None)
+                        aux[pos] = upnext[pos]
+                        self.queue_script.append(aux)
+            del upnext
 
     def player_to_play(self):
         while self.player_turn == True:
