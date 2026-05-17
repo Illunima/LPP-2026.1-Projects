@@ -1,6 +1,6 @@
 from Card import Card
 from Deck import Deck, SideDeck
-from Sigil import Airborne
+from Sigil import Airborne, Fledgling
 import random
 
 class BattleTable():
@@ -26,7 +26,7 @@ class BattleTable():
                     self.scribe_side[i].pos = i + 1
                     self.scribe_queue.pop(i)
                     self.scribe_queue.insert(i, None)
-                    print(f"A carta {self.scribe_side[i].name} avança para a posição {i+1} do campo do oponente.")         
+                    print(f"A carta {self.scribe_side[i].name} avança para a posição {i+1} do campo do oponente.")           
 
     def scribe_to_play(self):
         if len(self.queue_script) > 0:
@@ -211,7 +211,7 @@ class BattleTable():
                 self.player_side[pos].atk = intensity
                 self.player_side[pos].hp = intensity
                 if intensity > 4:
-                    self.player_side[pos].sigils.add(Airborne())
+                    self.player_side[pos].sigils.add(Airborne.sigil_id())
                 print("A Inanição surge diante de você.")
                 return
         for pos in check:
@@ -220,14 +220,14 @@ class BattleTable():
                 self.player_side[pos].atk = intensity
                 self.player_side[pos].hp = intensity
                 if intensity > 4:
-                    self.player_side[pos].sigils.add(Airborne())
+                    self.player_side[pos].sigils.add(Airborne.sigil_id())
                 print("A Inanição consome a criatura diante de você.")
                 return
         for pos in check:
             self.player_side[pos].atk = intensity
             self.player_side[pos].hp = intensity
             if intensity > 4:
-                self.player_side[pos].sigils.add(Airborne())
+                self.player_side[pos].sigils.add(Airborne.sigil_id())
             print("A Inanição cresce ainda mais forte.")
             return
         
@@ -258,6 +258,16 @@ class BattleTable():
                 turn_bones += defender.checkup(self.player_side)
         self.scale -= turn_damage
         return turn_bones
+    
+    def age_cards(self, side):
+        for card in side:
+            if card != None:
+                card.age += 1
+
+    def evolve_cards(self, side):
+        for card in side:
+            if card != None:
+                side[card.pos - 1] = card.evolve()
     
     def host_table(self):
         self.player.deck.deck_shuffle()
@@ -295,7 +305,9 @@ class BattleTable():
             if self.player_turn == True:
                 self.player_to_play()
                 self.player_bones += self.call_combat_player()
+                self.age_cards(self.player_side)
                 self.player_turn = False
+                self.evolve_cards(self.scribe_side)
                 print(f"Estado atual da balança: {self.scale}")
                 if self.scale >= 5:
                     self.ongoing = False
@@ -306,7 +318,9 @@ class BattleTable():
                 self.scribe_advance()
                 self.player_bones += self.call_combat_scribe()
                 self.scribe_to_play()
+                self.age_cards(self.scribe_side)
                 self.player_turn = True
+                self.evolve_cards(self.player_side)
                 print(f"Estado atual da balança: {self.scale}")
                 if self.scale <= -5:
                     self.ongoing = False

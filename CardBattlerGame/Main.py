@@ -2,6 +2,7 @@ from Player import Player
 from Scribe import Scribe
 from Card import Card
 from Playtables import BattleTable, MapEvent
+from Sigil import Sigil
 
 scribe = Scribe()
 player_1 = Player()
