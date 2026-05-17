@@ -1,3 +1,8 @@
+# Os selos são propriedades/habilidades especiais que mudam a forma como as cartas interagem umas com as outras nas batalhas.
+# Os selos são identificados por nome e seguem a tradução oficial de Inscryption.
+# Apenas alguns dos selos do jogo estão presentes pois não houve tempo de implementar todas as interações de todos os selos
+# (São mais de 30 selos no jogo original).
+
 class Sigil():
     name = "Sigil"
     @classmethod
@@ -13,29 +18,29 @@ class Stinky(Sigil):
     desc = "A criatura diante desta criatura perde 1 de poder."
 
 class Fledgling(Sigil):
-    name = "Fledgling"
-    desc = "After surviving for 1 turn, this card grows into a stronger form."
+    name = "Infante"
+    desc = "Esta criatura se transforma em uma forma mais poderosa depois de um turno no tabuleiro."
 
 class Leader(Sigil):
-    name = "Leader"
-    desc = "Creatures adjacent to this card gain 1 power"
+    name = "Líder"
+    desc = "Criaturas adjacentes a esta criatura ganham 1 de poder."
 
 class Airborne(Sigil):
-    name = "Airborne"
-    desc = "This card will ignore oposing cards and strike an opponent directly."
+    name = "Aéreo"
+    desc = "Esta criatura ataca o oponente diretamente, mesmo que haja uma criatura diante dela."
 
 class Sprinter(Sigil):
-    name = "Sprinter"
-    desc = "At the end of the owner's turn, this card moves in the sigil's direction."
+    name = "Veloz"
+    desc = "Esta criatura se move na direção indicada no selo (inicialmente direita) no final do turno de quem a possuir."
 
 class Repulsive(Sigil):
-    name = "Repulsive"
-    desc = "If a creature would attack this card, it does not."
+    name = "Repugnância"
+    desc = "Impede que esta criatura seja atacada por outra."
 
 class WorthySacrifice(Sigil):
-    name = "Worthy Sacrifice"
-    desc = "This card counts as 3 Blood  rather than 1 Blood when sacrificed."
+    name = "Sacrifício Digno"
+    desc = "Esta criatura concede 3 de Sangue (ao invés de de 1) ao ser sacrificada."
 
 class BoneKing(Sigil):
-    name = "Bone King"
-    desc = "When this card dies, 4 Bones are awarded instead of 1."
+    name = "Colheita de Ossos"
+    desc = "Quando esta criatura morre, concede 4 Ossos em vez de 1."

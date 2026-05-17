@@ -32,7 +32,7 @@ class Card():
 
         self.nature = self.get_card_nature()[id]
         self.data = BeastCard.gen_card()[id]
-        # Todas as informações relativas a cada carta estão armazenadas em suas sobreclasses
+        # Todas as informações relativas a cada carta estão armazenadas em suas subclasses
         # e são recuperadas para gerar um novo objeto da carta.
 
         self.name = self.data[0]
@@ -53,12 +53,13 @@ class Card():
         # Guarda a direção do selo Sprinter, quando estiver presente.
 
         self.age = 0
-        # Guarda a quantidade de turnos que esta carta permaneceu na mesa para ativar o efeito do selo Fledgling.
+        # Guarda a quantidade de turnos que esta carta permaneceu na mesa para ativar o efeito do selo Infante.
 
     # Sinceramente, esse método poderia simplismente retornar "Beast", mas ele seria útil com mais naturezas de carta.
 
     def get_card_nature(self):
-        nature_list = [ "Beast", "Beast", "Beast", "Beast", "Beast", "Beast", "Beast", "Beast", "Beast", "Beast", "Beast", "Beast", "Beast", "Beast", "Beast", "Beast" ]
+        nature_list = [ "Beast", "Beast", "Beast", "Beast", "Beast", "Beast", "Beast", "Beast",
+                        "Beast", "Beast", "Beast", "Beast", "Beast", "Beast", "Beast", "Beast" ]
         return nature_list
     
     # Serve para exibir uma carta no terminal. Outra alternativa mais interessante, porém mais extensa, seria passar
@@ -136,25 +137,25 @@ class Card():
                 if  sigil == MightyLeap.sigil_id(): # Impede sobrevoo
                     bypass = False
             if oposing_side[self.pos - 1] != None:
-                for sigil in oposing_side[self.pos - 1].sigils:
+                for sigil in oposing_side[self.pos - 1].sigils: # Verifica cartas à frente
                     if sigil == Stinky.sigil_id():
                         damage -= 1
-            if self.pos - 2 >= 0 and own_side[self.pos - 2] != None:
+            if self.pos - 2 >= 0 and own_side[self.pos - 2] != None: # Verifica cartas à esquerda
                 for sigil in own_side[self.pos - 2].sigils:
                     if sigil == Leader.sigil_id():
                         damage += 1
-            if self.pos < 4 and own_side[self.pos] != None:
+            if self.pos < 4 and own_side[self.pos] != None: # Verifica cartas à direita
                 for sigil in own_side[self.pos].sigils:
                     if sigil == Leader.sigil_id():
                         damage += 1
             if bypass:
-                if damage > 0:
+                if damage > 0: # Ataca por cima do alvo
                     print(f"{self.name} ataca por cima de {target.name}, adicionando {damage} à balança.")
                     scale_tip += damage
-            elif repulsive:
+            elif repulsive: # Alvo impede o ataque
                 print(f"{self.name} não consegue atacar {target.name}.")
             else:
-                if damage > 0:
+                if damage > 0: # Ataca o alvo
                     print(f"{self.name} ataca {target.name}, causando {damage} de dano.")
                     target.hp -= damage
             if sprint:
@@ -163,47 +164,57 @@ class Card():
     
     # Verifica e trata a morte de uma carta. Quando uma carta morre, ela é descaratada
     # e se for uma criatura, o jogador ganhará ossos independente se ele possuia a carta ou como a carta foi morta.
-    
+
     def checkup(self, own_side):
         bones = 1 # A maioria das cartas concede 1 osso ao morrrer
         if self.hp <= 0:
             for sigil in self.sigils: # Verifica selos nesta carta
                 if sigil == BoneKing.sigil_id():
                     bones = 4
-            if bones > 1:
+            if bones > 1: # Exibe a mensagem ao receber mais de um Osso
                 print(f"{self.name} pereceu. Você foi concedido {bones} Ossos.")
-            else:
+            else: # Exibe a mensagem ao receber um Osso
                 print(f"{self.name} pereceu. Você foi concedido {bones} Osso.")
-            own_side[self.pos-1] = None
-            self.pos = CardPos.DISCARD.value
+            own_side[self.pos-1] = None # Remove a carta da mesa
+            self.pos = CardPos.DISCARD.value # Discarta-se
             return bones
         return 0
     
     # Realiza a movimentação de carta no próprio lado do tabuleiro, instigado pelo selo Sprinter.
     
     def movement(self, own_side):
-        if self.pos == 1:
+        if self.pos == 1: # Força a direção do movimento caso a carta esteja em uma extremidade
             self.direction = "Right"
-        if self.pos == 4:
+        if self.pos == 4: # ^^
             self.direction = "Left"
         if self.direction == "Right":
-            if own_side[self.pos] == None:
-                own_side[self.pos] = self
+            if own_side[self.pos] == None: # Se não houver nenhuma carta ao lado, move esta carta
+                own_side[self.pos] = self 
                 own_side[self.pos - 1] = None
                 self.pos += 1
                 print(f"{self.name} se move para a direita.")
-            elif self.pos != 1:
-                self.direction = "Left"
+            elif self.pos != 1: # Caso tenha uma carta no caminho, muda de direção se não estiver na extremidade
+                self.direction = "Left" 
+                if own_side[self.pos - 2] == None: # Tenta se mover na nova direção
+                    own_side[self.pos - 2] = self
+                    own_side[self.pos - 1] = None
+                    self.pos -= 1
+                    print(f"{self.name} se move para a esquerda.")
         elif self.direction == "Left":
-            if own_side[self.pos - 2] == None:
+            if own_side[self.pos - 2] == None: # Se não houver nenhuma carta ao lado, move esta carta
                 own_side[self.pos - 2] = self
                 own_side[self.pos - 1] = None
                 self.pos -= 1
                 print(f"{self.name} se move para a esquerda.")
-            elif self.pos != 4:
+            elif self.pos != 4: # Caso tenha uma carta no caminho, muda de direção se não estiver na extremidade
                 self.direction = "Right"
+                if own_side[self.pos] == None: # Tenta se mover na nova direção
+                    own_side[self.pos] = self 
+                    own_side[self.pos - 1] = None
+                    self.pos += 1
+                    print(f"{self.name} se move para a direita.")
 
-    # Evolui cartas que possuem o selo Fledgling
+    # Evolui cartas que possuem o selo Infante.
 
     def evolve(self):
         if Fledgling.sigil_id() in self.sigils and self.age >= 1:
@@ -211,27 +222,27 @@ class Card():
                 case 6: # Evolui Filhote de lobo para Lobo
                     print(f"A carta {self.name} evolui para Lobo")
                     self.sigils.remove(Fledgling.sigil_id())
-                    card = Card(3)
+                    card = Card(3)                    # Cria a nova forma para a carta atual
                     card.hp -= self.base_hp - self.hp # Transfere o dano sofrido para a nova forma
                     for sigil in self.sigils:
-                        card.sigils.add(sigil) # Transfere selos adicionais para a nova forma
-                    self = card
+                        card.sigils.add(sigil)        # Transfere selos adicionais para a nova forma
+                    self = card                       # Muda esta carta para a sua nova forma
                 case 10: # Evolui Ovo de corvo para Corvo
                     print(f"A carta {self.name} evolui para Corvo")
                     self.sigils.remove(Fledgling.sigil_id())
-                    card = Card(9)
+                    card = Card(9)                    # Cria a nova forma para a carta atual
                     card.hp -= self.base_hp - self.hp # Transfere o dano sofrido para a nova forma
                     for sigil in self.sigils:
-                        card.sigils.add(sigil) # Transfere selos adicionais para a nova forma
-                    self = card
+                        card.sigils.add(sigil)        # Transfere selos adicionais para a nova forma
+                    self = card                       # Muda esta carta para a sua nova forma
                 case 13: # Evolui Filhote de cervo para Cervo
                     print(f"A Carta {self.name} evolui para Cervo")
                     self.sigils.remove(Fledgling.sigil_id())
-                    card = Card(12)
+                    card = Card(12)                   # Cria a nova forma para a carta atual
                     card.hp -= self.base_hp - self.hp # Transfere o dano sofrido para a nova forma
                     for sigil in self.sigils:
-                        card.sigils.add(sigil) # Transfere selos adicionais para a nova forma
-                    self = card
+                        card.sigils.add(sigil)        # Transfere selos adicionais para a nova forma
+                    self = card                       # Muda esta carta para a sua nova forma
                 case _: # Evolui outras cartas para sua forma adulta genérica
                     print(f"A carta {self.name} evolui para sua forma adulta.")
                     self.name += " Ancião"
@@ -253,17 +264,17 @@ class BeastCard(Card):
     wolf_cub = ( "Filhote de lobo", "Canine", 1, "Sangue", 1, 1, [Fledgling.sigil_id()] )#id 6
     alpha = ( "Alfa", "Canine", 4, "Ossos", 1, 2, [Leader.sigil_id()] )#id 7
     sparrow = ( "Pardal", "Avian", 1, "Sangue", 1, 2, [Airborne.sigil_id()] )#id 8
-    raven = ( "Corvo", "Avian", 2, "Sanue", 2, 3, [Airborne.sigil_id()] )#id 9
+    raven = ( "Corvo", "Avian", 2, "Sangue", 2, 3, [Airborne.sigil_id()] )#id 9
     raven_egg = ( "Ovo de corvo", "Avian", 1, "Sangue", 0, 2, [Fledgling.sigil_id()] )#id 10
     turkey_vulture = ( "Urubu", "Avian", 8, "Ossos", 3, 3, [Airborne.sigil_id()] )#id 11
     elk = ( "Cervo", "Hooved", 2, "Sangue", 2, 4, [Sprinter.sigil_id()] )#id 12
     elk_fawn = ( "Filhote de cervo", "Hooved", 1, "Sangue", 1, 1, [Sprinter.sigil_id(), Fledgling.sigil_id()] )#id 13
     river_snapper = ( "Tartaruga mordedora", "Reptile", 2, "Sangue", 1, 6, [] )#id 14
     rattler = ( "Cascavel", "Reptile", 6, "Ossos", 3, 1, [] )#id 15
-    starvation = ( "Inanição", "", 0, "Sangue", 0, 0, [Repulsive()] )#id 16
+    starvation = ( "Inanição", "", 0, "Sangue", 1, 1, [Repulsive.sigil_id()] )#id 16
     all_cards = [ squirrel, stoat, bullfrog, wolf, stinkbug, coyote, wolf_cub, alpha, sparrow, raven, raven_egg, 
         turkey_vulture, elk, elk_fawn, river_snapper, rattler ]
 
     @classmethod
-    def gen_card(cls):
+    def gen_card(cls): # Gera uma cópia da lista com todas as cartas disponíveis ao jogador
         return BeastCard.all_cards

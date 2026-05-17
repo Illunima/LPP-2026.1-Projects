@@ -3,19 +3,40 @@ from Deck import Deck, SideDeck
 from Sigil import Airborne, Fledgling
 import random
 
+# Hospeda as batalhas entre o jogador e o patrono
+
 class BattleTable():
     def __init__(self, player, scribe):
         self.scale = 0
+        # A balança mede a quantidade de dano causado diretamente entre os jogadores.
+        # Ataques diretos ao oponente adicionam pesos proporcionais ao dano causado.
+
         self.player_side = [ None, None, None, None ]
+        # Cartas do jogador na mesa
+
         self.scribe_side = [ None, None, None, None ]
+        # Cartas do patrono na mesa
+
         self.scribe_queue = [ None, None, None, None ]
+        # O patrono não joga cartas diretamente no campo de batalha.
+        # Ele joga cartas em posição de espera que depois avançam para o combate.
+        # O patrono não deve obedecer o custo das cartas.
+        # Dessa forma o jogador pode antecipar as jogadas do patrono.
+
         self.player = player
         self.player_bones = 0
+        # A quantidade de Ossos do jogador.
+
         self.scribe = scribe
         self.ongoing = True
         self.player_turn = True
         self.starvation = 0
+        # A fome serve para prevenir que uma batalha dure para sempre
+
         self.queue_script = BatlleScript.random_script().copy()
+        # Lista com todas as próximas jogadas do patrono
+
+    # Avança as cartas em espera do patrono para o campo de batalha.
 
     def scribe_advance(self):
         for i in range(4):
@@ -27,6 +48,8 @@ class BattleTable():
                     self.scribe_queue.pop(i)
                     self.scribe_queue.insert(i, None)
                     print(f"A carta {self.scribe_side[i].name} avança para a posição {i+1} do campo do oponente.")           
+
+    # Prepara as próximas cartas que o patrono vai colocar em espera.
 
     def scribe_to_play(self):
         if len(self.queue_script) > 0:
@@ -41,6 +64,8 @@ class BattleTable():
                         aux[pos] = upnext[pos]
                         self.queue_script.append(aux)
             del upnext
+
+    # Controla o turno do jogador. Poderia ter partes do código dividido em outros métodos para ficar mais organizado.
 
     def player_to_play(self):
         while self.player_turn == True:
@@ -169,6 +194,8 @@ class BattleTable():
             else:
                 print("Entrada inválida.")
 
+    # Permite que o jogador escolha de qual deck deseja comprar no início de seu turno.
+
     def player_draw(self):
         card_drawn = False
         while card_drawn == False:
@@ -203,6 +230,8 @@ class BattleTable():
                 print("Entrada inválida. Tente 'deck' ou 'side':")
         return self.starvation
     
+    # Quando o jogador está sem cartas para comprar em ambos os decks, a fome aparece para acabar com a batalha.
+    
     def starve(self, intensity):
         check = random.choices( [ 0, 1, 2, 3 ] )
         for pos in check:
@@ -231,6 +260,8 @@ class BattleTable():
             print("A Inanição cresce ainda mais forte.")
             return
         
+    # Executa o turno de combate do jogador
+        
     def call_combat_player(self):
         turn_damage = 0
         turn_bones = 0
@@ -244,6 +275,8 @@ class BattleTable():
                 turn_bones += defender.checkup(self.scribe_side)
         self.scale += turn_damage
         return turn_bones
+    
+    # Executa o turno de combate do patrono
 
     def call_combat_scribe(self):
         turn_damage = 0
@@ -259,10 +292,14 @@ class BattleTable():
         self.scale -= turn_damage
         return turn_bones
     
+    # Incrementa o contador de turnos de presença de cada carta na mesa
+    
     def age_cards(self, side):
         for card in side:
             if card != None:
                 card.age += 1
+
+    # Evolui cartas com o selo Infante na mesa
 
     def evolve_cards(self, side):
         for card in side:
@@ -378,8 +415,8 @@ class MapTable():
 
     def add_event_node(self, event_id):
         match event_id:
-            case 0:
-                self.road.append(MapEvent("battle"))
             case 1:
+                self.road.append(MapEvent("battle"))
+            case 2:
                 self.road.append(MapEvent("add_card"))
         return
