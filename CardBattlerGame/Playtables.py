@@ -1,6 +1,6 @@
 from Card import Card
 from Deck import Deck, SideDeck
-from Sigil import Airborne, Fledgling
+from Sigil import Airborne, Sprinter
 import random
 
 # Hospeda as batalhas entre o jogador e o patrono
@@ -40,23 +40,21 @@ class BattleTable():
 
     def scribe_advance(self):
         for i in range(4):
-            if self.scribe_queue[i] != None:
-                if self.scribe_side[i] == None:
-                    self.scribe_side.pop(i)
-                    self.scribe_side.insert(i, self.scribe_queue[i])
-                    self.scribe_side[i].pos = i + 1
-                    self.scribe_queue.pop(i)
-                    self.scribe_queue.insert(i, None)
+            if self.scribe_queue[i] != None:    # Para cada carta na fila,
+                if self.scribe_side[i] == None: # se não houver nenhuma carta à frente
+                    self.scribe_side[i] = self.scribe_queue[i] # Insere a carta naquela posição
+                    self.scribe_side[i].pos = i + 1            # Atualiza a posição da carta
+                    self.scribe_queue[i] = None                # Remove a carta da fila
                     print(f"A carta {self.scribe_side[i].name} avança para a posição {i+1} do campo do oponente.")           
 
     # Prepara as próximas cartas que o patrono vai colocar em espera.
 
     def scribe_to_play(self):
-        if len(self.queue_script) > 0:
-            upnext = self.queue_script.pop(0)
+        if len(self.queue_script) > 0:        # Se houverem próximas jogadas programadas,
+            upnext = self.queue_script.pop(0) # extrai as cartas a serem jogadas
             for pos in range(4):
-                if upnext[pos] != None:
-                    if self.scribe_queue[pos] == None:
+                if upnext[pos] != None:                         # Se houver uma carta para ser jogada naquela posição da fila
+                    if self.scribe_queue[pos] == None:          # e aquela posição da fila está vazia
                         self.scribe_queue[pos] = upnext[pos]
                         print(f"O patrono se prepara para avançar a carta {self.scribe_queue[pos].name} na posição {pos+1}")
                     else:
@@ -75,18 +73,58 @@ class BattleTable():
             "Digite 'bell' para encerrar seu turno.\n" \
             f"Estado atual da balança = {self.scale}")
             action = input()
-            if action == 'play':
-                print(f"Digite o número da carta na sua mão que deseja jogar (1-{len(self.player.hand)}):")
-                card_index = int(input()) - 1
-                if 0 <= card_index < len(self.player.hand):
-                    card_to_play = self.player.hand[card_index]
-                    ready = False
-                    needed_cost_type = card_to_play.cost_type
-                    needed_cost_amount = card_to_play.cost
-                    if needed_cost_type == "Sangue":
-                        blood_value = 0
-                        marked_index = []
-                        if needed_cost_amount == 0:
+            match action:
+                case 'play':
+                    print(f"Digite o número da carta na sua mão que deseja jogar (1-{len(self.player.hand)}):")
+                    card_index = int(input()) - 1
+                    if 0 <= card_index < len(self.player.hand):
+                        card_to_play = self.player.hand[card_index]
+                        ready = False
+                        needed_cost_type = card_to_play.cost_type
+                        needed_cost_amount = card_to_play.cost
+                        if needed_cost_type == "Sangue":
+                            blood_value = 0
+                            marked_index = []
+                            if needed_cost_amount == 0:
+                                free_position = False
+                                for pos in range(4):
+                                    if self.player_side[pos] == None:
+                                        free_position = True
+                                        break
+                                if free_position == False:
+                                    print("Não há espaço suficiente para invocar esta carta.")
+                                    continue
+                            while blood_value < needed_cost_amount:
+                                print(f"É preciso sacrificar {needed_cost_amount-blood_value} de Sangue para invocar a carta {card_to_play.name}." \
+                                f" Selecione uma carta do seu lado da mesa para sacrificar (1-4) ou '0' para cancelar:")
+                                sacrifice_index = int(input()) - 1
+                                if sacrifice_index == -1:
+                                    print("Invocação cancelada.")
+                                    marked_index.clear()
+                                    blood_value = 0
+                                    break
+                                if 0 <= sacrifice_index < 4 and self.player_side[sacrifice_index] != None:
+                                    sacrifice_worth = self.player_side[sacrifice_index].blood_sacrifice()
+                                    if sacrifice_worth == 0:
+                                        print("Esta carta não pode ser sacrificada. Escolha outra ou digite '0' para cancelar.")
+                                        continue
+                                    blood_value += sacrifice_worth
+                                    marked_index.append(sacrifice_index)
+                                    print(f"A carta {self.player_side[sacrifice_index].name} será sacrificada por {sacrifice_worth} de Sangue.")
+                                else:
+                                    print("Índice de carta inválido. Tente novamente.")
+                            for index in marked_index:
+                                self.player_bones += self.player_side[index].sacrifice(self.player_side)
+                            if needed_cost_amount == 0:
+                                print(f"Digite uma posição livre para invocar a carta {card_to_play.name} (1-4:)")
+                                ready = True
+                            elif blood_value == needed_cost_amount:
+                                print(f"Sacrificio completo. Digite uma posição livre para invocar a carta {card_to_play.name} (1-4):")
+                                ready = True
+                            elif blood_value > needed_cost_amount:
+                                print(f"Sacrificio excedente. Digite uma posição livre para invocar a carta {card_to_play.name} (1-4):")
+                                ready = True
+                        elif needed_cost_type == "Ossos":
                             free_position = False
                             for pos in range(4):
                                 if self.player_side[pos] == None:
@@ -95,104 +133,65 @@ class BattleTable():
                             if free_position == False:
                                 print("Não há espaço suficiente para invocar esta carta.")
                                 continue
-                        while blood_value < needed_cost_amount:
-                            print(f"É preciso sacrificar {needed_cost_amount-blood_value} de Sangue para invocar esta carta." \
-                            f" Selecione uma carta do seu lado da mesa para sacrificar (1-4) ou '0' para cancelar:")
-                            sacrifice_index = int(input()) - 1
-                            if sacrifice_index == -1:
-                                print("Invocação cancelada.")
-                                marked_index.clear()
-                                blood_value = 0
-                                break
-                            if 0 <= sacrifice_index < 4 and self.player_side[sacrifice_index] != None:
-                                sacrifice_worth = self.player_side[sacrifice_index].blood_sacrifice()
-                                if sacrifice_worth == 0:
-                                    print("Esta carta não pode ser sacrificada. Escolha outra ou digite '0' para cancelar.")
-                                    continue
-                                blood_value += sacrifice_worth
-                                marked_index.append(sacrifice_index)
-                                print(f"A carta {self.player_side[sacrifice_index].name} será sacrificada por {sacrifice_worth} de Sangue.")
+                            if self.player_bones >= needed_cost_amount:
+                                self.player_bones -= needed_cost_amount
+                                print(f"Digite uma posição livre para gastar {needed_cost_amount} Ossos e invocar a carta {card_to_play.name} (1-4):")
+                                ready = True
                             else:
-                                print("Índice de carta inválido. Tente novamente.")
-                        for index in marked_index:
-                            self.player_bones += self.player_side[index].sacrifice(self.player_side)
-                        if needed_cost_amount == 0:
-                            print(f"Digite uma posição livre para invocar a carta {card_to_play.name} (1-4:)")
-                            ready = True
-                        elif blood_value == needed_cost_amount:
-                            print(f"Sacrificio completo. Digite uma posição livre para invocar a carta {card_to_play.name} (1-4):")
-                            ready = True
-                        elif blood_value > needed_cost_amount:
-                            print(f"Sacrificio excedente. Digite uma posição livre para invocar a carta {card_to_play.name} (1-4):")
-                            ready = True
-                    elif needed_cost_type == "Ossos":
-                        free_position = False
-                        for pos in range(4):
-                            if self.player_side[pos] == None:
-                                free_position = True
-                                break
-                        if free_position == False:
-                            print("Não há espaço suficiente para invocar esta carta.")
-                            continue
-                        if self.player_bones >= needed_cost_amount:
-                            self.player_bones -= needed_cost_amount
-                            print(f"Digite uma posição livre para gastar {needed_cost_amount} Ossos e invocar a carta {card_to_play.name} (1-4):")
-                            ready = True
-                        else:
-                            print("Ossos insuficientes para invocar esta carta.")
-                    while ready == True:
-                            placement_index = int(input()) - 1
-                            if 0 <= placement_index < 4:
-                                if self.player_side[placement_index] == None:
-                                    card_to_play.pos = placement_index + 1
-                                    self.player_side[placement_index] = card_to_play
-                                    self.player.hand.pop(card_index)
-                                    ready = False
+                                print("Ossos insuficientes para invocar esta carta.")
+                        while ready == True:
+                                placement_index = int(input()) - 1
+                                if 0 <= placement_index < 4:
+                                    if self.player_side[placement_index] == None:
+                                        card_to_play.pos = placement_index + 1
+                                        self.player_side[placement_index] = card_to_play
+                                        self.player.hand.pop(card_index)
+                                        ready = False
+                                    else:
+                                        print(f"Esta posição já está ocupada. Escolha outra posição para invocar a carta {card_to_play.name}:")
                                 else:
-                                    print(f"Esta posição já está ocupada. Escolha outra posição para invocar a carta {card_to_play.name}:")
-                            else:
-                                print("Posição inválida. Tente novamente (1-4).")
-                else:
+                                    print("Posição inválida. Tente novamente (1-4).")
+                    else:
+                        if len(self.player.hand) == 0:
+                            print("Não há cartas em sua mão para jogar.")
+                        else:
+                            print("Índice de carta inválido. Tente novamente.")
+                case 'bell':
+                    return
+                case 'hand':
+                    print(f"Ossos: {self.player_bones}")
                     if len(self.player.hand) == 0:
-                        print("Não há cartas em sua mão para jogar.")
+                        print("Não há cartas em sua mão.")
                     else:
-                        print("Índice de carta inválido. Tente novamente.")
-            elif action == 'bell':
-                return
-            elif action == 'hand':
-                print(f"Ossos: {self.player_bones}")
-                if len(self.player.hand) == 0:
-                    print("Não há cartas em sua mão.")
-                else:
-                    print("Cartas na sua mão:")
-                    self.player.view_hand()
-            elif action == 'view':
-                print("Cartas no seu lado da mesa:")
-                for pos in range(4):
-                    card = self.player_side[pos]
-                    if card != None:
-                        print(f"Posição {pos+1}:")
-                        card.display_card()
-                    else:
-                        print(f"Posição {pos+1}: Vazia")
-                print("Cartas no lado da mesa do patrono:")
-                for pos in range(4):
-                    card = self.scribe_side[pos]
-                    if card != None:
-                        print(f"Posição {pos+1}:")
-                        card.display_card()
-                    else:
-                        print(f"Posição {pos+1}: Vazia")
-                print("Cartas nas posições de espera do patrono:")
-                for pos in range(4):
-                    card = self.scribe_queue[pos]
-                    if card != None:
-                        print(f"Posição {pos+1}:")
-                        card.display_card()
-                    else:
-                        print(f"Posição {pos+1}: Vazia")
-            else:
-                print("Entrada inválida.")
+                        print("Cartas na sua mão:")
+                        self.player.view_hand()
+                case 'view':
+                    print("Cartas no seu lado da mesa:")
+                    for pos in range(4):
+                        card = self.player_side[pos]
+                        if card != None:
+                            print(f"Posição {pos+1}:")
+                            card.display_card()
+                        else:
+                            print(f"Posição {pos+1}: Vazia")
+                    print("Cartas no lado da mesa do patrono:")
+                    for pos in range(4):
+                        card = self.scribe_side[pos]
+                        if card != None:
+                            print(f"Posição {pos+1}:")
+                            card.display_card()
+                        else:
+                            print(f"Posição {pos+1}: Vazia")
+                    print("Cartas nas posições de espera do patrono:")
+                    for pos in range(4):
+                        card = self.scribe_queue[pos]
+                        if card != None:
+                            print(f"Posição {pos+1}:")
+                            card.display_card()
+                        else:
+                            print(f"Posição {pos+1}: Vazia")
+                case _:
+                    print("Entrada inválida.")
 
     # Permite que o jogador escolha de qual deck deseja comprar no início de seu turno.
 
@@ -274,6 +273,9 @@ class BattleTable():
             if defender != None:
                 turn_bones += defender.checkup(self.scribe_side)
         self.scale += turn_damage
+        for pos in range(4):
+            if Sprinter.sigil_id() in self.player_side[pos].sigils:
+                self.player_side[pos].movement(self.player_side)
         return turn_bones
     
     # Executa o turno de combate do patrono
@@ -290,6 +292,9 @@ class BattleTable():
             if defender != None:
                 turn_bones += defender.checkup(self.player_side)
         self.scale -= turn_damage
+        for pos in range(4):
+            if Sprinter.sigil_id() in self.scribe_side[pos].sigils:
+                self.scribe_side[pos].movement(self.scribe_side)
         return turn_bones
     
     # Incrementa o contador de turnos de presença de cada carta na mesa

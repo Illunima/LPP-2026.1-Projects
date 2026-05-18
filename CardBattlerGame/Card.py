@@ -125,12 +125,9 @@ class Card():
             damage = self.atk
             bypass = False
             repulsive = False
-            sprint = False
             for sigil in self.sigils: #Verifica selos nesta carta
                 if sigil == Airborne.sigil_id(): # Sobrevoa o alvo
                     bypass = True
-                if sigil == Sprinter.sigil_id(): # Tenta se mover após atacar
-                    sprint = True
             for sigil in target.sigils: # Verifica selos no alvo
                 if sigil == Repulsive.sigil_id(): # Anula o dano
                     repulsive = True
@@ -158,8 +155,6 @@ class Card():
                 if damage > 0: # Ataca o alvo
                     print(f"{self.name} ataca {target.name}, causando {damage} de dano.")
                     target.hp -= damage
-            if sprint:
-                self.movement(own_side)
         return scale_tip
     
     # Verifica e trata a morte de uma carta. Quando uma carta morre, ela é descaratada
