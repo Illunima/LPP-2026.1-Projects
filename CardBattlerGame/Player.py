@@ -8,10 +8,14 @@ class Player():
         self.hand = []
         self.scale = 0
 
+    # Exibe o deck completo do jogador
+
     def view_deck(self):
         for card in self.deck.cards:
             card.display_card()
             print("")
+
+    # Exibe todas as cartas na mão do jogador
 
     def view_hand(self):
         for i in range( len(self.hand) ):

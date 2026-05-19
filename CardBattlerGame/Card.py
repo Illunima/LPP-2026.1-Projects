@@ -218,6 +218,7 @@ class Card():
                     print(f"A carta {self.name} evolui para Lobo")
                     self.sigils.remove(Fledgling.sigil_id())
                     card = Card(3)                    # Cria a nova forma para a carta atual
+                    card.pos = self.pos               # Tranfere a posição desta carta para a nova forma
                     card.hp -= self.base_hp - self.hp # Transfere o dano sofrido para a nova forma
                     for sigil in self.sigils:
                         card.sigils.add(sigil)        # Transfere selos adicionais para a nova forma
@@ -226,6 +227,7 @@ class Card():
                     print(f"A carta {self.name} evolui para Corvo")
                     self.sigils.remove(Fledgling.sigil_id())
                     card = Card(9)                    # Cria a nova forma para a carta atual
+                    card.pos = self.pos               # Tranfere a posição desta carta para a nova forma
                     card.hp -= self.base_hp - self.hp # Transfere o dano sofrido para a nova forma
                     for sigil in self.sigils:
                         card.sigils.add(sigil)        # Transfere selos adicionais para a nova forma
@@ -234,6 +236,7 @@ class Card():
                     print(f"A Carta {self.name} evolui para Cervo")
                     self.sigils.remove(Fledgling.sigil_id())
                     card = Card(12)                   # Cria a nova forma para a carta atual
+                    card.pos = self.pos               # Tranfere a posição desta carta para a nova forma
                     card.hp -= self.base_hp - self.hp # Transfere o dano sofrido para a nova forma
                     for sigil in self.sigils:
                         card.sigils.add(sigil)        # Transfere selos adicionais para a nova forma
@@ -268,8 +271,8 @@ class BeastCard(Card):
     rattler = ( "Cascavel", "Reptile", 6, "Ossos", 3, 1, [] )#id 15
     starvation = ( "Inanição", "", 0, "Sangue", 1, 1, [Repulsive.sigil_id()] )#id 16
     all_cards = [ squirrel, stoat, bullfrog, wolf, stinkbug, coyote, wolf_cub, alpha, sparrow, raven, raven_egg, 
-        turkey_vulture, elk, elk_fawn, river_snapper, rattler ]
+        turkey_vulture, elk, elk_fawn, river_snapper, rattler, starvation ]
 
     @classmethod
-    def gen_card(cls): # Gera uma cópia da lista com todas as cartas disponíveis ao jogador
+    def gen_card(cls): # Gera uma cópia da lista com todas as cartas existentes
         return BeastCard.all_cards

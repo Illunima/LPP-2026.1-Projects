@@ -1,0 +1,36 @@
+Este programa é uma tradução do jogo Inscryption (2021)
+Apenas as regras aplicadas neste programa estarão aqui listadas
+
+1. Contexto
+        Você se encontra em uma cabine en frente a uma figura misteriosa, o patrono da caibne. Ele te apresenta um conjunto de cartas e abre um mapa sobre a mesa.
+    Ele posiciona uma figura de madeira no mapa, e você a move para o símbolo em um dos caminhos abertos. Estes símbolos representam eventos, que nesta versão são
+    apenas o evento de adicionar uma carta ao seu baralho e o de batalha.
+
+2. Cartas
+        As cartas presentes neste programa são as cartas de bestas, visto que o único patrono presente é o patrono das bestas. Todas as cartas possuem um valor de 
+    ataque e de saúde, seu custo de posicionamento, bem como o tipo deste custo e também podem conter selos. 
+        Quadndo a saúde de uma carta se esgota, ela perece. Criaturas concedem Ossos ao jogador quando morrem. As cartas atacam automaticamente entre turnos,
+    causando dano a criatura em sua frente igual a seu poder de ataque. Se não houver nenhuma criatura em sua frente, ou caso seja possível por outros meios,
+    a carta irá atacar o oponente diretamente. Para cada ponto de dano causado ao oponente, um peso é adicionado a uma balança no lado de quem possui a carta
+    que causou o dano.
+        Existem dois tipos de custo: Sangue e Ossos. Sangue é obtido através do sacrifício de cartas posicionadas do seu lado da mesa de batalha. Por padrão, cada
+    carta de criatura oferece 1 Sangue ao ser sacrificada. Já ossos são obtidos quando qualquer criatura perece, 1 Osso por padrão, seja por causa de um ataque ou
+    por sacrifício. Sangue não pode ser acumulado, ele deve ser obtido e gasto "sob demanda", só é possível sacrificar uma carta se você for usar o Sangue em
+    sequência. Ossos são guardados apenas pelo jogador até o fim da batalha. O patrono não guarda Ossos pois ele não obedece o custo de qualquer carta, e ao invés
+    de invocar cartas diretamente do próprio lado da mesa, o patrono possui uma fileira a mais de posições de espera, onde ele posiciona cartas, independente de
+    custo, e essas cartas podem ser vistas pelo jogador antes de entrarem na fileira ativa do patrono em seu próximo turno.
+
+2.1 Selos
+        Os selos são "habilidades especias" presentes nas cartas que mudam a forma como elas interagem com a batalha. O arquivo "Sigil.py" contém todos os selos
+    neste programa e suas descrições. Uma carta pode ter zero ou mais selos, mas só pode ter cada selo presente uma vez.
+
+3. Deck
+        O deck é a coleção de cartas que o jogador possui ao longo de sua jornada. O deck do jogador existe em dois estados: completo e ativo. O deck completo
+    descreve todas as cartas em posse do jogador, enquanto o deck ativo descreve o deck que o jogador usa para comprar suas cartas em uma batalha. O deck ativo
+    se esgota ao longo de uma batalha, o completo se mantém entre batalhas. O deck ativo é reabastecido no começo de cada batalha com as cartas do deck completo.
+    O deck completo pode ser expandido ou reduzido entre batalhas, bem como as cartas nele podem ser aprimoradas (não podem ser aprimoradas nessa versão).
+
+3.1 Sidedeck
+        O sidedeck, deck de esquilos ou deck de sacrifícios é exatamente isso, um deck contendo apenas esquilos que não custam nada e que não tem poder de ataque
+    para serem posicionados e que podem ser sacrificados para invocar as cartas do seu deck principal. No começo de cada turno após o primeiro, o jogador será
+    confrontado com a escolha de comprar uma carta do seu deck principal ou do seu deck se sacrifícios.
