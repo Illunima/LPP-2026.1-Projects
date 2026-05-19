@@ -34,3 +34,18 @@ Apenas as regras aplicadas neste programa estarão aqui listadas
         O sidedeck, deck de esquilos ou deck de sacrifícios é exatamente isso, um deck contendo apenas esquilos que não custam nada e que não tem poder de ataque
     para serem posicionados e que podem ser sacrificados para invocar as cartas do seu deck principal. No começo de cada turno após o primeiro, o jogador será
     confrontado com a escolha de comprar uma carta do seu deck principal ou do seu deck se sacrifícios.
+
+3.2 Inanição
+        Caso o jogador esgote todas as cartas em ambos os seus decks, o jogador entra em estado de fome. A cada turno que o jogador estiver com fome, uma carta de
+    Inanição irá aparecer do lado da mesa do patrono. A inanição ganha mais saúde e poder de ataque quanto mais turnos o jogador permanecer com fome, e a Inanição
+    sempre possui o selo de repugnância, impedindo que esta seja atacada. Do quinto turno de fome em diante a Inanição ganha também o selo aéreo para tentar acabar
+    com o jogador mais rápido.
+
+4. Combate
+        O combate ocorre sobre a mesa e reserav três fileiras com quatro posições cada. a fileira mais próxima é a de cartas do jogador, em seguida as cartas do
+    patrono e por último as cartas em espera do patrono. No final do turno do jogador, cada uma de suas cartas atacam para a frente, uma após a outra, da
+    esquerda da mesa para a direita. Se houver uma carta oponetnte em sua frente, a carta causa dano igual à seu poder de ataque à carta do oponente, e se não
+    houver nenhuma carta à frente, esta causa dano diretamente ao oponente, adicionando pesos na balança igual a seu poder de ataque. No final do turno do patrono,
+    suas cartas atacam da mesma maneira que as cartas do jogador, porém antes disso, se houver alguma posição livre no lado da mesa do oponente e houver uma carta
+    em espera naquela mesma posição, ela avança para a fileira ativa do patrono. Quando a balança medir +5, o jogador vence, e se medir -5, o jogador perde.
+    

@@ -281,10 +281,13 @@ class BattleTable():
             if defender != None:    # Se houver uma carta defendendo a posição oposta
                 turn_bones += defender.checkup(self.scribe_side)    # Recebe os Ossos obtidos, caso o defensor pereca
         self.scale += turn_damage   # Adiciona pesos no lado da balança do jogador igual ao dano causado diretamente ao oponente neste turno
+        sprint = []                 # Guarda todas as cartas do jogador para verificar o selo veloz
         for card in self.player_side:
-            if card != None:
-                if Sprinter.sigil_id() in card.sigils: # Este selo é ativado no fim do turno de quem possui a carta com o selo
-                    card.movement(self.player_side)    # Executa o efeito do selo
+            if card != None:        # Pega todas as cartas do jogador posicionadas no campo ativo
+                sprint.append(card)
+        for card in sprint:
+            if Sprinter.sigil_id() in card.sigils: # Este selo é ativado no fim do turno de quem possui a carta com o selo
+                card.movement(self.player_side)    # Executa o efeito do selo
         return turn_bones
     
     # Executa o turno de combate do patrono.
@@ -301,10 +304,13 @@ class BattleTable():
             if defender != None:    # Se houver uma carta defendendo a posição oposta
                 turn_bones += defender.checkup(self.player_side)    # Recebe os Ossos obtidos, caso o defensor pereca
         self.scale -= turn_damage   # Adiciona pesos no lado da balança do patrono igual ao dano causado diretamente ao oponente neste turno
+        sprint = []                 # Guarda todas as cartas do patrono para verificar o selo veloz
         for card in self.scribe_side:
-            if card != None:
-                if Sprinter.sigil_id() in card.sigils: # Este selo é ativado no fim do turno de quem possui a carta com o selo
-                    card.movement(self.scribe_side)    # Executa o efeito do selo
+            if card != None:        # Pega todas as cartas do patrono posicionadas no campo ativo
+                sprint.append(card)
+        for card in sprint:
+            if Sprinter.sigil_id() in card.sigils: # Este selo é ativado no fim do turno de quem possui a carta com o selo
+                card.movement(self.scribe_side)    # Executa o efeito do selo
         return turn_bones
     
     # Incrementa o contador de turnos de presença de cada carta na mesa.
@@ -324,6 +330,15 @@ class BattleTable():
     # Executa a rotina de uma batalha.
 
     def host_table(self):
+        self.scale = 0 # Reseta todos os atributos desta classe para uma nova batalha
+        self.player_side = [ None, None, None, None ]
+        self.scribe_side = [ None, None, None, None ]
+        self.scribe_queue = [ None, None, None, None ]
+        self.player_bones = 0
+        self.ongoing = True
+        self.player_turn = True
+        self.starvation = 0
+        self.queue_script = BatlleScript.random_script().copy()
         self.player.deck.deck_shuffle()     # Embaralha o deck principal do jogador
         self.player.sidedeck.deck_shuffle() # Embaralha o sidedeck do jogador
         for i in range (3):
@@ -344,7 +359,7 @@ class BattleTable():
                 if self.scale >= 5:                     # Se a balança medir 5 ou mais ao lado do jogador
                     self.ongoing = False                # Encerra a batalha
                     print("Você venceu a batalha.")     # e declara a vitória do jogador
-                    return ( "win", self.scale - 5 )    # Retorna a quantidade excedente de pesos no lado do jogador à necessária para vencer
+                    return self.scale - 5               # Retorna a quantidade excedente de pesos no lado do jogador à necessária para vencer
             else:
                 print("Vez do patrono")
                 self.scribe_advance()                           # Avança as cartas nas posições de espera do patrono
@@ -357,7 +372,7 @@ class BattleTable():
                 if self.scale <= -5:                    # Se a balança medir 5 ou mais ao lado do patrono
                     self.ongoing = False                # Encerra a batalha
                     print("Você perdeu a batalha.")     # e declara a derrota do jogador
-                    return ( "loss", -1 )
+                    return -1
                 hunger = self.player_draw() # Recebe 0 quando o jogador compra uma carta. Se o jogador for incapaz de comprar uma carta,
                 if hunger > 0:              # recebe o valor da intensidade da fome
                     self.starve(hunger)     # Ativa a inanição
@@ -366,8 +381,11 @@ class BattleTable():
 
 class BatlleScript():
     script_1 = [ ( None, Card(2), None, None ), ( None, None, None, Card(5) ), ( None, None, None, None ), ( None, Card(8), None, None) ]
+    script_2 = [ ( Card(8), None, None, None ), ( None, None, None, Card(10) ), (None, Card(11), None, None )]
+    script_3 = [ ( None, None, Card(14), None ), ( Card(2), None, None, None), ( None, None, Card(15), None ), ( None, None, None, None ),
+                 ( None, None, None, Card(3) )]
 
-    all_scripts = [ script_1 ]
+    all_scripts = [ script_1, script_2, script_3 ]
 
     @classmethod
     def random_script(cls):
